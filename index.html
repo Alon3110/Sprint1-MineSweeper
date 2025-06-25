@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mine Sweeper</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body onload="onInIt()">
+
+    <h2>Score: <span></span></h2>
+
+    <div class="board"></div>
+
+    <div class="modal">
+        <h2>Game Over</h2>
+        <button onclick="onInIt()">🤯</button>
+    </div>
+    <div class="modal">
+        <button class="start" onclick="onInIt()">😊</button>
+    </div>
+    
+    <div class="win">
+        <h2>You Win</h2>
+        <button onclick="onInIt()">😎</button>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/game.js"></script>
+
+</body>
+</html>
