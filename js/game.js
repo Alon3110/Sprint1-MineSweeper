@@ -8,11 +8,13 @@ const EMPTY = ''
 const NORMAL = '😊'
 const LOSE = '🤯'
 const WIN = '😎'
+const SAFE = '🛟'
 
 
 var gGameStartTime = 0
 var gInterval
 var gBoard
+
 
 var gLevel = {
     SIZE: 4,
@@ -25,17 +27,22 @@ var gBoardSize = gLevel.SIZE ** 2
 
 var gGame = {
     isOn: false,
+    // isHint: false,
     revealedCount: 0,
     markedCount: 0,
     isFirstClick: true,
+    safeAmount: 3,
     secsPassed: 0,
     isWin: false,
-    livesLeft: 3
+    livesLeft: 3,
+    // hintLeft: 3
 }
 
 function onInIt() {
     gGame.isOn = true
     gGame.livesLeft = 3
+    gGame.safeAmount = 3
+    gGame.hintLeft = 3
     gGame.revealedCount = 0
     gGame.markedCount = 0
     gGame.secsPassed = 0
@@ -156,6 +163,10 @@ function onCellClicked(elCell, i, j) {
         gGame.isFirstClick = false
 
     }
+    if (gGame.isHint) {
+        hintMode(i, j)
+        return
+    }
 
     if (cell.isMine) {
         elCell.innerText = MINE
@@ -274,6 +285,7 @@ function checkGameOver(pos) {
         document.querySelector('.win').style.display = 'block'
         clearInterval(gInterval)
         gGame.isOn = false
+        updateBestTime()
     }
 }
 
@@ -306,8 +318,73 @@ function setBoardSize(elNum, elMine) {
     onInIt()
 }
 
-function hintMode() {
+function safeClick() {
+    if (gGame.safeAmount === 0) return
+
+    var safeCells = []
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            var cell = gBoard[i][j]
+            if (!cell.isMine && !cell.isRevealed) {
+                
+                safeCells.push({ i, j })
+            }
+        }
+    }
+
+    if (safeCells.length === 0) {
+        return
+    }
+
+    var randomIdx = getRandomIntInclusive(0, safeCells.length - 1)
+    var safeCell = safeCells[randomIdx]
+    console.log('Safe Click:', safeCell)
+
+    var elCell = document.querySelector(`.cell-${safeCell.i}-${safeCell.j}`)
+    elCell.innerText = SAFE
+
     setTimeout(() => {
-        
-    }, 1500);
+        elCell.innerText = HIDE
+    }, 300)
+    gGame.safeAmount--
+}
+
+function toggleLightMode() {
+    var btn = document.querySelector('.dark-mode-btn')
+
+    if (document.body.className === 'light-mode') {
+        document.body.className = ''
+        btn.innerText = 'Light Mode'
+    } else {
+        document.body.className = 'light-mode'
+        btn.innerText = 'Dark Mode'
+    }
+}
+
+function updateBestTime() {
+    var levelKey = `bestTime-${gLevel.SIZE}x${gLevel.SIZE}`
+    var now = Date.now()
+    var timeTaken = Math.floor((now - gGameStartTime) / 1000)
+
+    var bestTime = localStorage.getItem(levelKey)
+    if (!bestTime || timeTaken < bestTime) {
+        localStorage.setItem(levelKey, timeTaken)
+        renderBestTime()
+    }
+}
+
+function renderBestTime() {
+    var levelKey = `bestTime-${gLevel.SIZE}x${gLevel.SIZE}`
+    var bestTime = localStorage.getItem(levelKey)
+
+    var display = '--:--'
+    if (bestTime) {
+        var min = Math.floor(bestTime / 60)
+        var sec = bestTime % 60
+        if (min < 10) min = '0' + min
+        if (sec < 10) sec = '0' + sec
+        display = `${min}:${sec}`
+    }
+
+    document.querySelector('.best-time').innerText = display
 }

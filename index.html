@@ -11,6 +11,11 @@
 
 <body onload="onInIt()">
     <h1>Mine Sweeper</h1>
+
+    <button class="dark-mode-btn" onclick="toggleLightMode()">Light Mode</button>
+    
+    <h3>Best Time: <span class="best-time">--:--</span></h3>
+
     <h2>Lives Left : <span>2</span></h2>
 
     <p class="timer">
@@ -34,8 +39,13 @@
         <button class="btn" onclick="setBoardSize(12,32)">144</button>
     </div>
 
+    <div class="safe">
+        <button onclick="safeClick()">Safe</button>
+    </div>
     <div class="hint">
-        <button onclick="hintMode()">💡</button>
+        <button onclick="checkHintMode(this)">💡</button>
+        <button onclick="checkHintMode(this)">💡</button>
+        <button onclick="checkHintMode(this)">💡</button>
     </div>
 
     <div class="modal">
